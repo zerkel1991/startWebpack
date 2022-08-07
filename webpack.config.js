@@ -19,11 +19,12 @@ module.exports = {
         open: true,
         hot:true,
     },
-    entry:path.resolve(__dirname,'src','index.js'),
+    entry:['@babel/polyfill',path.resolve(__dirname,'src','index.js')],
     output:{
         path:path.resolve(__dirname,'dist'),
         clean:true,
         filename:'[name].[contenthash].js',
+        assetModuleFilename: 'assets/[name][ext]'
     },
     plugins: [new HtmlWebpackPlugin({
         template:path.resolve(__dirname,'src','index.html')
@@ -53,7 +54,44 @@ module.exports = {
         'sass-loader'],
           },
           {
-            test: /\.m?js$/,
+            test: /\.woff2?$/i,
+            type: 'asset/resource',
+            generator:{
+              filename:'fonts/[name].[ext]'
+            }
+
+          },
+          {
+            test: /\.(jpe?g|png|webp|gif|svg)$/i,
+            use:[
+              {
+                loader: 'image-webpack-loader',
+                options: {
+                  mozjpeg: {
+                    progressive: true,
+                  },
+                  // optipng.enabled: false will disable optipng
+                  optipng: {
+                    enabled: false,
+                  },
+                  pngquant: {
+                    quality: [0.65, 0.90],
+                    speed: 4
+                  },
+                  gifsicle: {
+                    interlaced: false,
+                  },
+                  // the webp option will enable WEBP
+                  webp: {
+                    quality: 75
+                  }
+                }
+              }
+            ],
+            type: 'asset/resource',
+          },
+          {
+            test: /\.m?js$/i,
             exclude: /(node_modules|bower_components)/,
             use: {
               loader: 'babel-loader',
